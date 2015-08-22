@@ -1,16 +1,13 @@
 package penguinologist.diyandroidchallenge;
 
-import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -24,6 +21,10 @@ import penguinologist.menu.SatelliteMenuItem;
 public class MainActivity extends AppCompatActivity {
 
     private List<RowItem> rowItems;
+
+
+    //TODO get the data from the server and push it into the arrays onCreation of the activity
+    //TODO take care of the comments and the addition of new comments
 
     private static Integer[] images = {
             R.mipmap.ic_launcher,
