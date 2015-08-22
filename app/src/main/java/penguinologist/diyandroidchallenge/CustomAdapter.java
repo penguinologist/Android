@@ -9,12 +9,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CustomAdapter extends ArrayAdapter<RowItem> {
 
@@ -33,7 +32,7 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
     }
 
 
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(final int position, View convertView, ViewGroup parent){
         ViewHolder holder;
         RowItem rowItem = getItem(position);
 
@@ -56,6 +55,13 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
 
 
 
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "clicked " + position, Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
         return convertView;
     }
