@@ -2,6 +2,7 @@ package penguinologist.diyandroidchallenge;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,12 +11,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
         CustomAdapter adapter = new CustomAdapter(getApplicationContext(), R.layout.list_row, rowItems);
         lv.setAdapter(adapter);
 
-        Log.e("loaded","main");
+        Log.e("loaded", "main");
 
         lv.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("yay","it worked!!!!");
+                Log.e("yay", "it worked!!!!");
             }
 
             @Override
@@ -71,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+
+
+
     }
 
     @Override

@@ -1,1 +1,1 @@
-include ':app', ':satellitemenu'
+include ':app', ':menu'
