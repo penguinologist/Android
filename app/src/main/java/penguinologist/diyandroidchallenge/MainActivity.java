@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,12 +13,12 @@ import android.view.View;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+import penguinologist.menu.SatelliteMenu;
+import penguinologist.menu.SatelliteMenuItem;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private List<RowItem> rowItems;
 
     private static Integer[] images = {
-            R.mipmap.ic_launcher ,
+            R.mipmap.ic_launcher,
             Color.RED,
             Color.RED,
             Color.RED,
@@ -38,21 +37,18 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-
         ListView lv = (ListView) findViewById(R.id.myList);
         rowItems = new ArrayList<RowItem>();
 
-        String[] titles = {"Movie1","Movie2","Movie3","Movie4","Movie5","Movie6","Movie7","Movie8"};
-        String[] descriptions = {"First Movie","Second movie","Third Movie","Fourth Movie","Fifth Movie",
-                "Sixth Movie","Seventh Movie","Eighth Movie"};
+        String[] titles = {"Movie1", "Movie2", "Movie3", "Movie4", "Movie5", "Movie6", "Movie7", "Movie8"};
+        String[] descriptions = {"First Movie", "Second movie", "Third Movie", "Fourth Movie", "Fifth Movie",
+                "Sixth Movie", "Seventh Movie", "Eighth Movie"};
         //Populate the List
         for (int i = 0; i < titles.length; i++) {
             RowItem item = new RowItem(images[i], titles[i], descriptions[i]);
@@ -78,8 +74,40 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        //--------------------------------------
+        //menu
 
 
+        SatelliteMenu menu = (SatelliteMenu) findViewById(R.id.menu);
+        List<SatelliteMenuItem> items = new ArrayList<SatelliteMenuItem>();
+        items.add(new SatelliteMenuItem(1, R.drawable.ic_comm));
+        items.add(new SatelliteMenuItem(0, R.drawable.ic_projects));
+        menu.addItems(items);
+        //because there's only 2 items here, the linking will be hardcoded rather than looped
+
+        menu.setOnItemClickedListener(new SatelliteMenu.SateliteClickedListener() {
+            public void eventOccured(int id) {
+
+                Log.e("id", "" + id);
+                if (id == 0) {
+                    //refresh the page when the first button is clicked.
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (id == 1) {
+                    //go to comments if the second button is clicked
+                    Intent intent = new Intent(MainActivity.this, Comments.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+
+            }
+        });
+
+
+        //----- end of menu ----
 
     }
 
