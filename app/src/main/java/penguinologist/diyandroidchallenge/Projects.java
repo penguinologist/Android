@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +17,7 @@ import penguinologist.menu.SatelliteMenu;
 import penguinologist.menu.SatelliteMenuItem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class Projects extends AppCompatActivity {
 
     private List<RowItem> rowItems;
 
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_projects);
 
 
         ListView lv = (ListView) findViewById(R.id.myList);
@@ -60,12 +59,11 @@ public class MainActivity extends AppCompatActivity {
         CustomAdapter adapter = new CustomAdapter(getApplicationContext(), R.layout.list_row, rowItems);
         lv.setAdapter(adapter);
 
-        Log.e("loaded", "main");
 
         lv.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("yay", "it worked!!!!");
+
             }
 
             @Override
@@ -89,16 +87,15 @@ public class MainActivity extends AppCompatActivity {
         menu.setOnItemClickedListener(new SatelliteMenu.SateliteClickedListener() {
             public void eventOccured(int id) {
 
-                Log.e("id", "" + id);
                 if (id == 0) {
                     //refresh the page when the first button is clicked.
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    Intent intent = new Intent(Projects.this, Projects.class);
                     startActivity(intent);
                     finish();
                 }
                 if (id == 1) {
                     //go to comments if the second button is clicked
-                    Intent intent = new Intent(MainActivity.this, Comments.class);
+                    Intent intent = new Intent(Projects.this, Comments.class);
                     startActivity(intent);
                     finish();
                 }
