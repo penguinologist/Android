@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:background="#e5e5e5">
 
+
     <ListView
         android:id="@+id/myList"
         android:layout_width="match_parent"
@@ -16,7 +17,13 @@
         android:dividerHeight="10dp"
         android:paddingLeft="10dip"
         android:paddingRight="10dip"
-        android:paddingTop="1dip"/>
+        android:paddingTop="1dip"
+
+
+
+
+        />
+
 
     <penguinologist.menu.SatelliteMenu
         android:id="@+id/menu"

@@ -1,13 +1,10 @@
 package penguinologist.diyandroidchallenge;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -60,18 +57,6 @@ public class Projects extends AppCompatActivity {
         lv.setAdapter(adapter);
 
 
-        lv.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
 
         //--------------------------------------
         //menu
@@ -89,15 +74,15 @@ public class Projects extends AppCompatActivity {
 
                 if (id == 0) {
                     //refresh the page when the first button is clicked.
-                    Intent intent = new Intent(Projects.this, Projects.class);
-                    startActivity(intent);
-                    finish();
+
+                    //load user projects
+
+
+
                 }
                 if (id == 1) {
-                    //go to comments if the second button is clicked
-                    Intent intent = new Intent(Projects.this, Comments.class);
-                    startActivity(intent);
-                    finish();
+                    //if this is clicked, all the projects friends have posted should be shown.
+                    //load friends' projects
                 }
 
 

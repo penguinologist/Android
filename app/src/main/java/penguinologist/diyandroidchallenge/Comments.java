@@ -1,16 +1,9 @@
 package penguinologist.diyandroidchallenge;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import penguinologist.menu.SatelliteMenu;
-import penguinologist.menu.SatelliteMenuItem;
 
 public class Comments extends AppCompatActivity {
 
@@ -19,38 +12,6 @@ public class Comments extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
 
-        //menu
-
-
-        SatelliteMenu menu = (SatelliteMenu) findViewById(R.id.menu);
-        List<SatelliteMenuItem> items = new ArrayList<SatelliteMenuItem>();
-        items.add(new SatelliteMenuItem(1, R.drawable.ic_comm));
-        items.add(new SatelliteMenuItem(0, R.drawable.ic_projects));
-        menu.addItems(items);
-        //because there's only 2 items here, the linking will be hardcoded rather than looped
-
-        menu.setOnItemClickedListener(new SatelliteMenu.SateliteClickedListener() {
-            public void eventOccured(int id) {
-
-                if (id == 0) {
-                    //refresh the page when the first button is clicked.
-                    Intent intent = new Intent(Comments.this, Projects.class);
-                    startActivity(intent);
-                    finish();
-                }
-                if (id == 1) {
-                    //go to comments if the second button is clicked
-                    Intent intent = new Intent(Comments.this, Comments.class);
-                    startActivity(intent);
-                    finish();
-                }
-
-
-            }
-        });
-
-
-        //----- end of menu ----
 
 
 
