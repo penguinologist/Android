@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
+/**
+ * Created by Jeroen on 8/23/2015.
+ * Long live the Penguin!
+ */
 public class Comments extends AppCompatActivity {
 
     @Override

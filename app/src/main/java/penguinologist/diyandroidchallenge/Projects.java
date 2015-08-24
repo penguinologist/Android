@@ -14,6 +14,11 @@ import java.util.List;
 import penguinologist.menu.SatelliteMenu;
 import penguinologist.menu.SatelliteMenuItem;
 
+/**
+ * Created by Jeroen on 8/23/2015.
+ * Long live the Penguin!
+ */
+
 
 public class Projects extends AppCompatActivity {
 
@@ -47,6 +52,7 @@ public class Projects extends AppCompatActivity {
 
 
         Async.auth.execute();
+        Async.loadUserProjects.execute();
 
         ListView lv = (ListView) findViewById(R.id.myList);
         rowItems = new ArrayList<RowItem>();
