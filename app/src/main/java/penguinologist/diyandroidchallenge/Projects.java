@@ -3,6 +3,7 @@ package penguinologist.diyandroidchallenge;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -22,6 +23,10 @@ public class Projects extends AppCompatActivity {
     //TODO get the data from the server and push it into the arrays onCreation of the activity
     //TODO take care of the comments and the addition of new comments
 
+
+    // Drawable d = Drawable.createFromPath(pathName);
+
+    //TODO initialize this array
     private static Integer[] images = {
             R.mipmap.ic_launcher,
             Color.RED,
@@ -33,12 +38,15 @@ public class Projects extends AppCompatActivity {
             Color.RED
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
 
+        //
+
+
+        Async.auth.execute();
 
         ListView lv = (ListView) findViewById(R.id.myList);
         rowItems = new ArrayList<RowItem>();
@@ -55,7 +63,6 @@ public class Projects extends AppCompatActivity {
         // Set the adapter on the ListView
         CustomAdapter adapter = new CustomAdapter(getApplicationContext(), R.layout.list_row, rowItems);
         lv.setAdapter(adapter);
-
 
 
         //--------------------------------------
@@ -77,12 +84,20 @@ public class Projects extends AppCompatActivity {
 
                     //load user projects
 
-
-
+                    try {
+                        loadConfig(0);
+                    } catch (Exception e) {
+                        Log.e("ERROR", "Something broke...");
+                    }
                 }
                 if (id == 1) {
                     //if this is clicked, all the projects friends have posted should be shown.
                     //load friends' projects
+                    try {
+                        loadConfig(1);
+                    } catch (Exception e) {
+                        Log.e("ERROR", "Something broke...");
+                    }
                 }
 
 
@@ -92,6 +107,23 @@ public class Projects extends AppCompatActivity {
 
         //----- end of menu ----
 
+    }
+
+//OKHttp stuff
+
+
+
+
+    private void loadConfig(int selection) throws Exception {
+        if (selection == 0) {
+
+
+
+        } else if (selection == 1) {
+
+        } else {
+            Log.e("ERROR", "Unable to load config - incorrect selection");
+        }
     }
 
     @Override
@@ -115,4 +147,6 @@ public class Projects extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

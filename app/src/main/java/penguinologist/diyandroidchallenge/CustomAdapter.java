@@ -67,7 +67,6 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
                 //setup the moving from one place to another
 
 
-
             }
         });
 
