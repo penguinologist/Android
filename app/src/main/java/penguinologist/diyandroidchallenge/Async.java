@@ -44,25 +44,28 @@ public class Async {
     };
 
 
-    public static AsyncTask<View, Void, View> loadUserProjects = new AsyncTask<View, Void, View>() {
+    public static AsyncTask<Void, Void, Void> loadUserProjects = new AsyncTask<Void, Void, Void>() {
         @Override
-        protected View doInBackground(View... params) {
+        protected Void doInBackground(Void... params) {
             try {
-                au.getUserProjects(params[0]);
+
+                au.getUserProjects();
             } catch (Exception e) {
                 Log.e("error", e.toString());
             }
-            return params[0];
+            return null;
         }
 
         @Override
-        protected void onPostExecute(View params) {
+        protected void onPostExecute(Void params) {
 
             Log.e("params", params + "");
 
-            ListView list = (ListView) params.findViewById(R.id.listView);
+
 
         }
+
+
     };
 
 
@@ -110,7 +113,7 @@ public class Async {
         }
 
 
-        public void getUserProjects(View view) throws Exception {
+        public void getUserProjects() throws Exception {
 
             Request request = new Request.Builder()
                     .url("http://api.diy.org/makers/" + username + "/projects")
@@ -135,35 +138,6 @@ public class Async {
                 Log.e("title", resp2.getString("title"));
 
 
-                ArrayList<RowItem> rowItems;
-//                  Integer[] images = {
-//            R.mipmap.ic_launcher,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED
-//    };
-
-
-                ListView lv = (ListView) view.findViewById(R.id.myList);
-                rowItems = new ArrayList<RowItem>();
-
-//        String[] titles = {"Movie1", "Movie2", "Movie3", "Movie4", "Movie5", "Movie6", "Movie7", "Movie8"};
-//        String[] descriptions = {"First Movie", "Second movie", "Third Movie", "Fourth Movie", "Fifth Movie",
-//                "Sixth Movie", "Seventh Movie", "Eighth Movie"};
-                //Populate the List
-//        for (int i = 0; i < titles.length; i++) {
-//            RowItem item = new RowItem(images[i], titles[i], descriptions[i]);
-//            rowItems.add(item);
-//        }
-
-                // Set the adapter on the ListView
-                CustomAdapter adapter = new CustomAdapter(view.getContext(), R.layout.list_row, rowItems);
-                lv.setAdapter(adapter);
-
 
             }
 
@@ -174,4 +148,7 @@ public class Async {
         }
 
     }
+
+
+
 }
