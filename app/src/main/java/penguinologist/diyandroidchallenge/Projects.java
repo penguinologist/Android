@@ -52,7 +52,13 @@ public class Projects extends AppCompatActivity implements AsyncTaskCallBacks{
 
 
         Async.auth.execute();
-        Async.loadUserProjects.execute();
+        Async.loadUserProjects.execute(new AsyncTaskCallBacks(){
+
+            @Override
+            public void thingToBeDoneOnMyActivity(Object dataFromAsyncTask) {
+
+            }
+        });
 
         ListView lv = (ListView) findViewById(R.id.myList);
         rowItems = new ArrayList<RowItem>();

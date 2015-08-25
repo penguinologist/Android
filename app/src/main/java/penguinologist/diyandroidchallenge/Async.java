@@ -44,9 +44,9 @@ public class Async {
     };
 
 
-    public static AsyncTask<Void, Void, Void> loadUserProjects = new AsyncTask<Void, Void, Void>() {
+    public static AsyncTask<AsyncTaskCallBacks, Void, Void> loadUserProjects = new AsyncTask<AsyncTaskCallBacks, Void, Void>() {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(AsyncTaskCallBacks... params) {
             try {
 
                 au.getUserProjects();
