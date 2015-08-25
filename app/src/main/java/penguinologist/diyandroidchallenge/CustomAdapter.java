@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,9 +58,9 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
             holder.description = (TextView) convertView.findViewById(R.id.description);
 
             convertView.setTag(holder);
-        } else
+        } else {
             holder = (ViewHolder) convertView.getTag();
-
+        }
 
         Picasso.with(super.getContext()).load(rowItem.getImageId()).into(holder.image);
         holder.title.setText(rowItem.getTitle());
@@ -70,26 +71,36 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
             public void onClick(View v) {
                 //setup the moving from one activity to another.
                 //position is kept in the getView method as a parameter for future use
+
+
+
                 Toast.makeText(v.getContext(), "Loading comments... ", Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(v.getContext(),Comments.class);
+                ArrayList<String> ids = Projects.getIDs();
+
+                ArrayList<String> titles = Projects.getTitles();
+                String username = Projects.getUsername();
+                String token = Projects.getToken();
+                String password = Projects.getPassword();
+
+                Intent intent = new Intent(v.getContext(), Comments.class);
+                intent.putExtra("id",ids.get(position));
+                intent.putExtra("title",titles.get(position));
+                intent.putExtra("username",username);
+                intent.putExtra("token",token);
+                intent.putExtra("password",password);
+
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 v.getContext().startActivity(intent);
-
-
-
-
 
 
             }
         });
 
 
-
         return convertView;
     }
-
 
 
 }

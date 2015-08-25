@@ -1,17 +1,14 @@
 package penguinologist.diyandroidchallenge;
 
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
+
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Credentials;
@@ -40,22 +37,28 @@ public class Projects extends AppCompatActivity {
 
     private List<RowItem> rowItems;
     private CustomAdapter adapter;
-    private String token;
-
-    //TODO get the data from the server and push it into the arrays onCreation of the activity
-    //TODO take care of the comments and the addition of new comments
+    private static String token;
 
 
+    //hardcoded the login value
     private final static String username = "hiveworking";
     private final static String password = "hiveworking";
     private final OkHttpClient client = new OkHttpClient();
     private RowItem o;
+    private boolean who = false;
+
+    private static ArrayList<String> projectIDs;
+    private static ArrayList<String> titles;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
 
+
+        projectIDs = new ArrayList<>();
+        titles = new ArrayList<>();
 
         ListView lv = (ListView) findViewById(R.id.myList);
         rowItems = new ArrayList<RowItem>();
@@ -65,14 +68,15 @@ public class Projects extends AppCompatActivity {
         lv.setAdapter(adapter);
 
 
-
+        //default is loading of user profile
+        if (!who) {
+            loadUserProjects();
+        } else {
+            loadFriendProjects();
+        }
 
         //async call to authenticate. Proceed on success, getting the data from the server to add to the list
         //data includes pictures, titles, etc.
-
-
-        //load user profile
-        loadUserProjects();
 
 
         //--------------------------------------
@@ -119,6 +123,22 @@ public class Projects extends AppCompatActivity {
 
     }
 
+    private void loadFriendProjects() {
+
+
+    }
+
+
+    public static ArrayList<String> getIDs(){
+
+        return projectIDs;
+    }
+
+
+    public static ArrayList<String> getTitles() {
+        return titles;
+    }
+
 
     private void loadConfig(int selection) throws Exception {
         if (selection == 0) {
@@ -128,7 +148,8 @@ public class Projects extends AppCompatActivity {
 
 
         } else if (selection == 1) {
-
+            adapter.clear();
+            loadFriendProjects();
 
         } else {
             Log.e("ERROR", "Unable to load config - incorrect selection");
@@ -171,12 +192,12 @@ public class Projects extends AppCompatActivity {
                         throw new IOException("Unexpected code " + response);
 
                     String body = response.body().string();
-                    Log.e("output", body);
+//                    Log.e("output", body);
 
                     JSONObject resp = new JSONObject(body);
                     JSONObject responseObject = resp.getJSONObject("response");
                     token = responseObject.getString("token");
-                    Log.e("Token", token);
+//                    Log.e("Token", token);
                 } catch (Exception e) {
                     Log.e("error", "something happened");
                 }
@@ -213,20 +234,24 @@ public class Projects extends AppCompatActivity {
 
 
                             String body = response.body().string();
-                            Log.e("output", body);
+//                            Log.e("output", body);
 
                             JSONObject resp = new JSONObject(body);
 
                             JSONArray arr = new JSONArray(resp.getString("response"));
 
-                            Log.e("length", arr.length() + "");
+//                            Log.e("length", arr.length() + "");
                             for (int i = 0; i < arr.length(); i++) {
 
 
                                 JSONObject current = arr.getJSONObject(i);
 
+                                int id = current.getInt("id");
+//                                Log.e("id", "" + id);
+                                projectIDs.add(id+"");
                                 String title = current.getString("title");
-                                Log.e("title", title);
+                                titles.add(i,title);
+//                                Log.e("title", title);
                                 JSONArray clips = current.getJSONArray("clips");
 
 
@@ -237,7 +262,7 @@ public class Projects extends AppCompatActivity {
                                 String description = "";
 
                                 o = new RowItem(picture, title, description);
-                                Log.e("Projects", 1 + "");
+//                                Log.e("Projects", 1 + "");
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -248,7 +273,7 @@ public class Projects extends AppCompatActivity {
 
                             }
 
-                            Log.e("response", token);
+//                            Log.e("response", token);
 
                         } catch (Exception e) {
                             Log.e("second async task error", e.getMessage());
@@ -264,6 +289,10 @@ public class Projects extends AppCompatActivity {
         });
 
     }
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -287,5 +316,15 @@ public class Projects extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public static String getUsername() {
+        return username;
+    }
 
+    public static String getToken() {
+        return token;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
 }
