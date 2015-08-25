@@ -65,6 +65,8 @@ public class Projects extends AppCompatActivity {
         lv.setAdapter(adapter);
 
 
+
+
         //async call to authenticate. Proceed on success, getting the data from the server to add to the list
         //data includes pictures, titles, etc.
 

@@ -72,10 +72,12 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
                 //position is kept in the getView method as a parameter for future use
                 Toast.makeText(v.getContext(), "Loading comments... ", Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(context,Comments.class);
+                Intent intent = new Intent(v.getContext(),Comments.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 v.getContext().startActivity(intent);
-                
+
+
 
 
 
@@ -83,6 +85,11 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
             }
         });
 
+
+
         return convertView;
     }
+
+
+
 }
