@@ -3,6 +3,7 @@ package penguinologist.diyandroidchallenge;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 /**
@@ -35,7 +38,6 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
         ImageView image;
         TextView title;
         TextView description;
-        ProgressBar spin;
         LinearLayout card;
     }
 
@@ -52,17 +54,15 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
             holder.image = (ImageView) convertView.findViewById(R.id.list_image);
             holder.title = (TextView) convertView.findViewById(R.id.title);
             holder.description = (TextView) convertView.findViewById(R.id.description);
-            holder.spin = (ProgressBar) convertView.findViewById(R.id.progress_circular);
 
             convertView.setTag(holder);
         } else
             holder = (ViewHolder) convertView.getTag();
 
-        holder.image.setImageResource(rowItem.getImageId());
-        holder.image.setVisibility(View.INVISIBLE);
+
+        Picasso.with(super.getContext()).load(rowItem.getImageId()).into(holder.image);
         holder.title.setText(rowItem.getTitle());
         holder.description.setText(rowItem.getDesc());
-
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

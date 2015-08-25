@@ -1,25 +1,27 @@
 package penguinologist.diyandroidchallenge;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Created by Jeroen on 8/21/2015.
  */
 
 public class RowItem {
-    private int imageId;
+    private String imageId;
     private String title;
     private String description;
 
-    public RowItem(int imageId, String title, String desc) {
+    public RowItem(String imageId, String title, String desc) {
         this.imageId = imageId;
         this.title = title;
         this.description = desc;
     }
 
-    public int getImageId() {
+    public String getImageId() {
         return imageId;
     }
 
-    public void setImageId(int imageId) {
+    public void setImageId(String imageId) {
         this.imageId = imageId;
     }
 
