@@ -1,12 +1,15 @@
 package penguinologist.diyandroidchallenge;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ import penguinologist.menu.SatelliteMenuItem;
 public class Projects extends AppCompatActivity {
 
     private List<RowItem> rowItems;
-
+    private String token;
 
     //TODO get the data from the server and push it into the arrays onCreation of the activity
     //TODO take care of the comments and the addition of new comments
@@ -32,16 +35,7 @@ public class Projects extends AppCompatActivity {
     // Drawable d = Drawable.createFromPath(pathName);
 
     //TODO initialize this array
-    private static Integer[] images = {
-            R.mipmap.ic_launcher,
-            Color.RED,
-            Color.RED,
-            Color.RED,
-            Color.RED,
-            Color.RED,
-            Color.RED,
-            Color.RED
-    };
+//
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,23 +46,11 @@ public class Projects extends AppCompatActivity {
 
 
         Async.auth.execute();
-        Async.loadUserProjects.execute();
 
-        ListView lv = (ListView) findViewById(R.id.myList);
-        rowItems = new ArrayList<RowItem>();
+        Async.loadUserProjects.execute(getCurrentFocus());
 
-        String[] titles = {"Movie1", "Movie2", "Movie3", "Movie4", "Movie5", "Movie6", "Movie7", "Movie8"};
-        String[] descriptions = {"First Movie", "Second movie", "Third Movie", "Fourth Movie", "Fifth Movie",
-                "Sixth Movie", "Seventh Movie", "Eighth Movie"};
-        //Populate the List
-        for (int i = 0; i < titles.length; i++) {
-            RowItem item = new RowItem(images[i], titles[i], descriptions[i]);
-            rowItems.add(item);
-        }
 
-        // Set the adapter on the ListView
-        CustomAdapter adapter = new CustomAdapter(getApplicationContext(), R.layout.list_row, rowItems);
-        lv.setAdapter(adapter);
+
 
 
         //--------------------------------------
@@ -115,7 +97,6 @@ public class Projects extends AppCompatActivity {
 
     }
 
-//OKHttp stuff
 
 
 

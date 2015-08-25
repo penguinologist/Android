@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/DIYAndroidChallenge.iml" filepath="$PROJECT_DIR$/DIYAndroidChallenge.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/menu/menu.iml" filepath="$PROJECT_DIR$/menu/menu.iml" />
-      <module fileurl="file://$PROJECT_DIR$/satellitemenu/satellitemenu.iml" filepath="$PROJECT_DIR$/satellitemenu/satellitemenu.iml" />
     </modules>
   </component>
 </project>
