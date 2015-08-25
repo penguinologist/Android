@@ -44,18 +44,24 @@ public class Async {
     };
 
 
-
-
-
-    public static AsyncTask<View, Void, Void> loadUserProjects = new AsyncTask<View, Void, Void>() {
+    public static AsyncTask<View, Void, View> loadUserProjects = new AsyncTask<View, Void, View>() {
         @Override
-        protected Void doInBackground(View... params) {
+        protected View doInBackground(View... params) {
             try {
                 au.getUserProjects(params[0]);
             } catch (Exception e) {
                 Log.e("error", e.toString());
             }
-            return null;
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(View params) {
+
+            Log.e("params", params + "");
+
+            ListView list = (ListView) params.findViewById(R.id.listView);
+
         }
     };
 
@@ -129,9 +135,6 @@ public class Async {
                 Log.e("title", resp2.getString("title"));
 
 
-
-
-
                 ArrayList<RowItem> rowItems;
 //                  Integer[] images = {
 //            R.mipmap.ic_launcher,
@@ -160,15 +163,6 @@ public class Async {
                 // Set the adapter on the ListView
                 CustomAdapter adapter = new CustomAdapter(view.getContext(), R.layout.list_row, rowItems);
                 lv.setAdapter(adapter);
-
-
-
-
-
-
-
-
-
 
 
             }
