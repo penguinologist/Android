@@ -8,7 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Credentials;
@@ -47,24 +50,11 @@ public class Projects extends AppCompatActivity {
     private final static String password = "hiveworking";
     private final OkHttpClient client = new OkHttpClient();
     private RowItem o;
-    //TODO initialize this array
-//    private static Integer[] images = {
-//            R.mipmap.ic_launcher,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED,
-//            Color.RED
-//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
-
-        //
 
 
         ListView lv = (ListView) findViewById(R.id.myList);
@@ -80,7 +70,7 @@ public class Projects extends AppCompatActivity {
 
 
         //load user profile
-
+        loadUserProjects();
 
 
         //--------------------------------------

@@ -1,8 +1,8 @@
 package penguinologist.diyandroidchallenge;
 
 
-
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,15 +12,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
 /**
  * Created by Jeroen on 8/21/2015.
  * Long live the Penguin!
  */
-
 
 
 public class CustomAdapter extends ArrayAdapter<RowItem> {
@@ -67,7 +68,16 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //setup the moving from one place to another
+                //setup the moving from one activity to another.
+                //position is kept in the getView method as a parameter for future use
+                Toast.makeText(v.getContext(), "Loading comments... ", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(context,Comments.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                v.getContext().startActivity(intent);
+                
+
+
 
 
             }
