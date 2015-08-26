@@ -155,6 +155,62 @@ public class Comments extends AppCompatActivity {
 
                                                         input = userInput.getText().toString();
 
+                                                        AsyncTask auth = new AsyncTask() {
+
+
+                                                            //authenticate
+                                                            @Override
+                                                            protected Object doInBackground(Object[] params) {
+                                                                client.setAuthenticator(new Authenticator() {
+                                                                    @Override
+                                                                    public Request authenticate(Proxy proxy, Response response) {
+
+                                                                        //hardcoded the login values
+                                                                        String credential = Credentials.basic(username, password);
+                                                                        return response.request().newBuilder()
+                                                                                .header("Authorization", credential)
+                                                                                .build();
+                                                                    }
+
+                                                                    @Override
+                                                                    public Request authenticateProxy(Proxy proxy, Response response) {
+                                                                        return null; // Null indicates no attempt to authenticate.
+                                                                    }
+                                                                });
+
+                                                                Request request = new Request.Builder()
+                                                                        .url("https://api.diy.org/authorize")
+                                                                        .build();
+
+                                                                try {
+                                                                    Response response = client.newCall(request).execute();
+                                                                    if (!response.isSuccessful())
+                                                                        throw new IOException("Unexpected code " + response);
+
+                                                                    String body = response.body().string();
+//                    Log.e("output", body);
+
+                                                                    JSONObject resp = new JSONObject(body);
+                                                                    JSONObject responseObject = resp.getJSONObject("response");
+                                                                    token = responseObject.getString("token");
+//                    Log.e("Token", token);
+                                                                } catch (Exception e) {
+                                                                    Log.e("error", "something happened");
+                                                                }
+
+                                                                return null;
+                                                            }
+
+
+                                                            @Override
+                                                            protected void onPostExecute(Object o) {
+
+
+                                                            }
+                                                        }.execute();
+
+                                                        Log.e("authenticated","posting now.....");
+                                                        //post
 
                                                         AsyncTask post = new AsyncTask() {
                                                             @Override
@@ -305,7 +361,7 @@ public class Comments extends AppCompatActivity {
 
 
                             String body = response.body().string();
-                            Log.e("output", body);
+//                            Log.e("output", body);
                             JSONObject resp = new JSONObject(body);
 
                             JSONArray arr = new JSONArray(resp.getString("response"));
