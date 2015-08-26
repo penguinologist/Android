@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import penguinologist.menu.SatelliteMenu;
 import penguinologist.menu.SatelliteMenuItem;
@@ -48,12 +49,12 @@ public class Projects extends AppCompatActivity {
 
     private final OkHttpClient client = new OkHttpClient();
     private RowItem o;
-    private static boolean who = false;
+    private static boolean friends = false;
 
     private static ArrayList<String> projectIDs;
     private static ArrayList<String> titles;
     private int i;
-
+    private static String currentUser;
     private static String other;
 
     @Override
@@ -73,13 +74,14 @@ public class Projects extends AppCompatActivity {
         adapter = new CustomAdapter(getApplicationContext(), R.layout.list_row, rowItems);
         lv.setAdapter(adapter);
 
-
+        currentUser = username;
         //default is loading of user profile
-        if (!who) {
+        if (!friends) {
             loadUserProjects();
         } else {
-            loadFriendProjects();
             other = "";
+            loadFriendProjects();
+
         }
 
         //async call to authenticate. Proceed on success, getting the data from the server to add to the list
@@ -108,7 +110,7 @@ public class Projects extends AppCompatActivity {
 
                     try {
                         loadConfig(0);
-                        who = false;
+                        friends = false;
                     } catch (Exception e) {
                         Log.e("ERROR", "Something broke...");
                     }
@@ -118,7 +120,7 @@ public class Projects extends AppCompatActivity {
                     //load friends' projects
                     try {
                         loadConfig(1);
-                        who=true;
+                        friends =true;
                     } catch (Exception e) {
                         Log.e("ERROR", "Something broke...");
                     }
@@ -284,20 +286,30 @@ public class Projects extends AppCompatActivity {
 
             String u = "";
 
+
+
             @Override
             protected void onPostExecute(Object o) {
                 //now that we have the users, time to go through the list and gather all their projects, adding them one by one...
+                u = friends.get(0);
+
+
+
 
                 for (i = 0; i < friends.size(); i++) {
 
-                    Log.e("i here", i + "");
                     u = friends.get(i);
 
-                    AsyncTask yy = new AsyncTask() {
+                    Log.e("i here is " + i, u);
+
+
+                    new AsyncTask() {
                         @Override
                         protected Object doInBackground(Object[] params) {
 
-                            Log.e("i", i + "");
+
+                            Log.e("u",u);
+//                            Log.e("i", i + "");
                             Request request = new Request.Builder()
                                     .url("http://api.diy.org/makers/" + u + "/projects")
                                     .header("x-diy-api-token", token)
@@ -339,7 +351,7 @@ public class Projects extends AppCompatActivity {
 
                                     final RowItem p = new RowItem(picture, title, description);
 //                                Log.e("Projects", 1 + "");
-                                    Log.e("title", title);
+                                    Log.e("title on run " + i, title);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -365,15 +377,17 @@ public class Projects extends AppCompatActivity {
                         @Override
                         protected void onPostExecute(Object o) {
                             adapter.notifyDataSetChanged();
+
                         }
                     }.execute();
+
 
                 }
 
 
             }
 
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 
@@ -419,7 +433,7 @@ public class Projects extends AppCompatActivity {
                     token = responseObject.getString("token");
 //                    Log.e("Token", token);
                 } catch (Exception e) {
-                    Log.e("error", "something happened");
+//                    Log.e("error", "something happened");
                 }
 
                 return null;
@@ -534,7 +548,7 @@ public class Projects extends AppCompatActivity {
     }
 
     public static String getUsername() {
-       if(who){ //if it's for friends, the username of the friends should be passed along, not the current user's username...
+       if(friends){ //if it's for friends, the username of the friends should be passed along, not the current user's username...
            return other;
        }
 
@@ -549,4 +563,7 @@ public class Projects extends AppCompatActivity {
         return password;
     }
 
+    public static String getCurrentUser(){
+        return currentUser;
+    }
 }

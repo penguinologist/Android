@@ -81,6 +81,7 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
                 String username = Projects.getUsername();
                 String token = Projects.getToken();
                 String password = Projects.getPassword();
+                String currentUser = Projects.getCurrentUser();
 
                 Intent intent = new Intent(v.getContext(), Comments.class);
                 intent.putExtra("id", ids.get(position));
@@ -88,6 +89,7 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
                 intent.putExtra("username", username);
                 intent.putExtra("token", token);
                 intent.putExtra("password", password);
+                intent.putExtra("currentUser",currentUser);
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

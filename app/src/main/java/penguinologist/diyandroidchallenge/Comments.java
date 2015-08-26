@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +22,6 @@ import android.widget.Toast;
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -40,6 +38,11 @@ import java.util.ArrayList;
  * Created by Jeroen on 8/23/2015.
  * Long live the Penguin!
  */
+
+
+/**
+ * This class contains methods, synchronous and asynchronous, querying the API for comments on specific projects
+ */
 public class Comments extends AppCompatActivity {
     private Button back;
     private Button post;
@@ -54,33 +57,29 @@ public class Comments extends AppCompatActivity {
 
     private String comment;
     private String input;
+    private String currentUser;
 
     private final OkHttpClient client = new OkHttpClient();
 
-    public static final MediaType MEDIA_TYPE_MARKDOWN
-            = MediaType.parse("raw");
-
-
     private Context context;
-    private  int postID = 0;
+    private int postID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
 
-
-        //retrieve the ID of the project and load comments accordingly...
-
         String ttle = "";
+         currentUser = "";
 
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         if (intent != null) {
             postID = Integer.valueOf(intent.getStringExtra("id"));
             ttle = intent.getStringExtra("title");
             username = intent.getStringExtra("username");
             password = intent.getStringExtra("password");
+            currentUser = intent.getStringExtra("currentUser");
         }
 
         list = (ListView) findViewById(R.id.listView);
@@ -127,15 +126,6 @@ public class Comments extends AppCompatActivity {
                         .setPositiveButton("Submit",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, final int id) {
-                                        // get user input and set it to result
-                                        // edit text
-//                                        result.setText(userInput.getText());
-
-
-
-                                        //TODO submit this message
-
-                                        ///makers/:id/projects/:id/favorites
 
                                         runOnUiThread(new Runnable() {
                                             @Override
@@ -143,8 +133,8 @@ public class Comments extends AppCompatActivity {
 
                                             }
                                         });
-                                        AsyncTask auth = new AsyncTask() {
 
+                                        AsyncTask auth = new AsyncTask() {
 
                                             @Override
                                             protected Object doInBackground(Object[] params) {
@@ -153,8 +143,10 @@ public class Comments extends AppCompatActivity {
                                                     @Override
                                                     public void run() {
 
-
                                                         input = userInput.getText().toString();
+
+                                                        Log.e("username",username);
+                                                        Log.e("password",password);
 
                                                         AsyncTask auth = new AsyncTask() {
 
@@ -167,7 +159,7 @@ public class Comments extends AppCompatActivity {
                                                                     public Request authenticate(Proxy proxy, Response response) {
 
                                                                         //hardcoded the login values
-                                                                        String credential = Credentials.basic(username, password);
+                                                                        String credential = Credentials.basic(currentUser, password);
                                                                         return response.request().newBuilder()
                                                                                 .header("Authorization", credential)
                                                                                 .build();
@@ -189,28 +181,21 @@ public class Comments extends AppCompatActivity {
                                                                         throw new IOException("Unexpected code " + response);
 
                                                                     String body = response.body().string();
-//                    Log.e("output", body);
 
                                                                     JSONObject resp = new JSONObject(body);
                                                                     JSONObject responseObject = resp.getJSONObject("response");
                                                                     token = responseObject.getString("token");
-//                    Log.e("Token", token);
                                                                 } catch (Exception e) {
                                                                     Log.e("error", "something happened");
+                                                                    Log.e("message",e.getMessage());
                                                                 }
 
                                                                 return null;
                                                             }
 
-
-                                                            @Override
-                                                            protected void onPostExecute(Object o) {
-
-
-                                                            }
                                                         }.execute();
 
-                                                        Log.e("authenticated","posting now.....");
+                                                        Log.e("authenticated", "posting now.....");
                                                         //post
 
                                                         AsyncTask post = new AsyncTask() {
@@ -223,7 +208,7 @@ public class Comments extends AppCompatActivity {
                                                                         .build();
 
                                                                 Request request = new Request.Builder()
-                                                                        .url("https://api.diy.org/makers/" + username + "/projects/"+postID+"/comments")
+                                                                        .url("https://api.diy.org/makers/" + username + "/projects/" + postID + "/comments")
                                                                         .post(formBody)
                                                                         .build();
                                                                 try {
@@ -231,13 +216,16 @@ public class Comments extends AppCompatActivity {
                                                                     if (!response.isSuccessful())
                                                                         throw new IOException("Unexpected code " + response);
 
+                                                                    //at this point the post is succesful
+                                                                    adapter.add(input);
 
-                                                                }catch(IOException e){
-                                                                    if(e==null){
-                                                                        Log.e("oops","null");
+
+                                                                } catch (IOException e) {
+                                                                    if (e == null) {
+                                                                        Log.e("oops", "null");
                                                                     }
-                                                                    Log.e("message",e.getMessage());
-                                                                    Log.e("ERROR","Post unsuccesful");
+                                                                    Log.e("message", e.getMessage());
+                                                                    Log.e("ERROR", "Post unsuccesful");
                                                                 }
                                                                 return null;
                                                             }
@@ -253,14 +241,6 @@ public class Comments extends AppCompatActivity {
                                                 Toast.makeText(context, "Comment is live!!! ", Toast.LENGTH_SHORT).show();
                                             }
                                         }.execute();
-
-
-                                        //authori
-
-
-
-
-
                                     }
                                 })
                         .setNegativeButton("Cancel",
@@ -278,18 +258,17 @@ public class Comments extends AppCompatActivity {
 
             }
         });
-
-
     }
 
+    /**
+     * this method loads the comments for each project
+     * @param id The id of the project
+     */
     private void loadComments(int id) {
-
 
 //authorize again (prevents timeouts)
 
         AsyncTask auth = new AsyncTask() {
-
-
             @Override
             protected Object doInBackground(Object[] params) {
                 client.setAuthenticator(new Authenticator() {
@@ -319,8 +298,6 @@ public class Comments extends AppCompatActivity {
                         throw new IOException("Unexpected code " + response);
 
                     String body = response.body().string();
-//                    Log.e("output", body);
-
                     JSONObject resp = new JSONObject(body);
                     JSONObject responseObject = resp.getJSONObject("response");
                     token = responseObject.getString("token");
@@ -331,29 +308,16 @@ public class Comments extends AppCompatActivity {
 
                 return null;
             }
-
-
-            @Override
-            protected void onPostExecute(Object o) {
-
-
-            }
         }.execute();
-
 
         final int commentID = id;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-
                 AsyncTask p = new AsyncTask() {
                     @Override
                     protected Object doInBackground(Object[] params) {
-
-
                         comment = "";//initialize the comment to be anything other than null to avoid nullpointer exceptions....
-
 
                         //http://api.diy.org/makers/:id/projects/:id/comments
                         Request request = new Request.Builder()
@@ -364,44 +328,21 @@ public class Comments extends AppCompatActivity {
                             Response response = client.newCall(request).execute();
                             if (!response.isSuccessful())
                                 throw new IOException("Unexpected code " + response);
-
-
                             String body = response.body().string();
 //                            Log.e("output", body);
                             JSONObject resp = new JSONObject(body);
-
                             JSONArray arr = new JSONArray(resp.getString("response"));
-
                             for (int i = 0; i < arr.length(); i++) {
-
-
                                 JSONObject current = arr.getJSONObject(i);
                                 comment = current.getString("html");
 //                                Log.e("outside",comment);
                                 comments.add(comment);
-//
-//                                runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        Log.e("inside",comment);
-//                                        adapter.add(comment);
-//
-//
-//                                    }
-//                                });
-
-
                             }
-
 //                            Log.e("response", token);
-
                         } catch (Exception e) {
                             Log.e("second async task error", e.getMessage());
                         }
-
-
                         //after all that is completed and everything is correctly added to the adapter, restore visibility of the imageview
-
                         return null;
                     }
 
