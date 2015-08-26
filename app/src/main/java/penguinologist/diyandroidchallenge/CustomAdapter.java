@@ -1,6 +1,5 @@
 package penguinologist.diyandroidchallenge;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -84,6 +83,7 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
         holder.title.setText(rowItem.getTitle());
         holder.description.setText(rowItem.getDesc());
 
+        //this method call defines what happens when a user clicks on a project
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,16 +93,20 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
 
                 Toast.makeText(v.getContext(), "Loading comments... ", Toast.LENGTH_SHORT).show();
 
-                String username = Projects.getUsername();
+                String username = rowItem.getCurrentUser();
                 String token = Projects.getToken();
-                String password = Projects.getPassword();
+                String password = "";
+
+
+                password = Projects.getPassword();
+
                 String projectOwner = rowItem.getProjectOwner();
+
 
                 Intent intent = new Intent(v.getContext(), Comments.class);
                 intent.putExtra("id", rowItem.getProjectID());
 
                 intent.putExtra("title", rowItem.getTitle());
-                Log.e("Custom Adapter", "current ID: " + rowItem.getTitle());
                 intent.putExtra("username", username);
                 intent.putExtra("token", token);
                 intent.putExtra("password", password);

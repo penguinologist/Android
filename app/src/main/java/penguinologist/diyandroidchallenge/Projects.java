@@ -1,7 +1,6 @@
 package penguinologist.diyandroidchallenge;
 
 
-import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,7 +36,9 @@ import penguinologist.menu.SatelliteMenuItem;
  * Long live the Penguin!
  */
 
-
+/**
+ * The Projects class contains a list of the projects created by the user as well as by the makers they follow.
+ */
 public class Projects extends AppCompatActivity {
 
     private List<RowItem> rowItems;
@@ -58,15 +59,14 @@ public class Projects extends AppCompatActivity {
     private static String currentUser;
     private static String other;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
+        Log.e("password",password);
 
-        Log.e("username", username);
-        Log.e("password", password);
-
-        Toast.makeText(this, " Click the logo to switch between your projects and those of your friends! ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, " Tap the logo to switch between your projects and those of your friends! ", Toast.LENGTH_SHORT).show();
         projectIDs = new ArrayList<>();
         titles = new ArrayList<>();
 
@@ -87,10 +87,6 @@ public class Projects extends AppCompatActivity {
 
         }
 
-        //async call to authenticate. Proceed on success, getting the data from the server to add to the list
-        //data includes pictures, titles, etc.
-
-
         //--------------------------------------
         //menu
 
@@ -101,16 +97,14 @@ public class Projects extends AppCompatActivity {
         items.add(new SatelliteMenuItem(0, R.drawable.ic_user));
 
         menu.addItems(items);
-        //because there's only 2 items here, the linking will be hardcoded rather than looped
+        //because there's only 2 items here, the linking will be hardcoded rather than programmatically looped.
 
         menu.setOnItemClickedListener(new SatelliteMenu.SateliteClickedListener() {
             public void eventOccured(int id) {
 
                 if (id == 0) {
                     //refresh the page when the first button is clicked.
-
                     //load user projects
-
                     try {
                         loadConfig(0);
                         friends = false;
@@ -132,23 +126,8 @@ public class Projects extends AppCompatActivity {
 
             }
         });
-
-
         //----- end of menu ----
-
     }
-
-
-    public static ArrayList<String> getIDs() {
-
-        return projectIDs;
-    }
-
-
-    public static ArrayList<String> getTitles() {
-        return titles;
-    }
-
 
     private void loadConfig(int selection) throws Exception {
         if (selection == 0) {
@@ -180,6 +159,9 @@ public class Projects extends AppCompatActivity {
     }
 
 
+    /**
+     * This method loads the projects of friends.
+     */
     private void loadFriendProjects() {
 
         projectIDs = new ArrayList<>();//clear out previous projects
@@ -250,7 +232,6 @@ public class Projects extends AppCompatActivity {
                         Log.e("FAIL", throwable.getMessage());
                     }
 
-                    @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onResponse(Response response) throws IOException {
                         try {
@@ -310,6 +291,8 @@ public class Projects extends AppCompatActivity {
 
                                                     String makerID = "";
                                                     JSONObject maker = current.getJSONObject("maker");
+                                                    String owner = "";
+                                                    owner = maker.getString("nickname");
                                                     makerID = maker.getString("url");
                                                     String title = current.getString("title");
                                                     titles.add(j, title);
@@ -318,9 +301,9 @@ public class Projects extends AppCompatActivity {
 
                                                     String picture = clips.getJSONObject(0).getJSONObject("assets").getJSONObject("ios_960").getString("url");
 
-                                                    String description = "";
+                                                    String description = "Created by " + owner;
 
-                                                    final RowItem p = new RowItem(picture, title, description, id + "", makerID);
+                                                    final RowItem p = new RowItem(picture, title, description, id + "", makerID, username, password, token);
 //                                Log.e("Projects", 1 + "");
                                                     runOnUiThread(new Runnable() {
                                                         @Override
@@ -361,12 +344,10 @@ public class Projects extends AppCompatActivity {
         }.execute();
     }
 
-    //end of asynchronous calls
 
-
-//        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
+    /**
+     * This method loads the user projects.
+     */
     private void loadUserProjects() {
 
 
@@ -469,9 +450,10 @@ public class Projects extends AppCompatActivity {
                                 String picture = clips.getJSONObject(0).getJSONObject("assets").getJSONObject("ios_960").getString("url");
 
 
-                                String description = "";
+                                String description = "Created by " + username;
 
-                                o = new RowItem(picture, title, description, id + "", username);
+
+                                o = new RowItem(picture, title, description, id + "", username, username, password, token);
 //                                Log.e("Projects", 1 + "");
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -500,6 +482,7 @@ public class Projects extends AppCompatActivity {
 
     }
 
+    //Other methods required by Android, but unused for this project.
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -523,23 +506,22 @@ public class Projects extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static String getUsername() {
-        if (friends) { //if it's for friends, the username of the friends should be passed along, not the current user's username...
-            return other;
-        }
 
-        return username;
-    }
-
+    /**
+     * This method retrieves the token to be used when an API call is to be made.
+     * @return String representation of the token.
+     */
     public static String getToken() {
         return token;
     }
 
+    /**
+     * Not the prettiest, I know, but it works for now. I had issues with the token.
+     * @return String value of Password
+     */
     public static String getPassword() {
         return password;
     }
 
-    public static String getCurrentUser() {
-        return currentUser;
-    }
+
 }

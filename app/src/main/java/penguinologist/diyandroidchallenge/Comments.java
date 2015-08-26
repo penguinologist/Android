@@ -66,6 +66,10 @@ public class Comments extends AppCompatActivity {
     private int postID = 0;
     private String projectOwner;
 
+    /**
+     * Method called upon creation of the activity
+     * @param savedInstanceState previous instance
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +77,7 @@ public class Comments extends AppCompatActivity {
 
         String ttle = "";
         currentUser = "";
-
+        password="";
 
         final Intent intent = getIntent();
         if (intent != null) {
@@ -92,6 +96,7 @@ public class Comments extends AppCompatActivity {
 
 
         loadComments(postID);
+        Log.e("password here",password);
         title = (TextView) findViewById(R.id.textView);
         back = (Button) findViewById(R.id.button2);
         post = (Button) findViewById(R.id.button);
@@ -131,7 +136,6 @@ public class Comments extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, final int id) {
 
 
-
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -140,55 +144,81 @@ public class Comments extends AppCompatActivity {
                                         });
 
 
-
-
                                         AsyncTask auth = new AsyncTask() {
 
                                             @Override
                                             protected Object doInBackground(Object[] params) {
 
 
-                                                        Log.e("user input",input);
+                                                Log.e("user input", input);
 
-                                                        Log.e("username", username);
-                                                        Log.e("password", password);
+                                                Log.e("username", username);
+                                                Log.e("password",password);
 
+                                                client.setAuthenticator(new Authenticator() {
+                                                    @Override
+                                                    public Request authenticate(Proxy proxy, Response response) {
 
-
-
-
-
-                                                        Log.e("authenticated", "posting now.....");
-                                                        //post
-
-
-                                                        RequestBody formBody = new FormEncodingBuilder()
-                                                                .add("raw", input)
+                                                        //hardcoded the login values
+                                                        String credential = Credentials.basic(username, password);
+                                                        return response.request().newBuilder()
+                                                                .header("Authorization", credential)
                                                                 .build();
+                                                    }
 
-                                                        Request request = new Request.Builder()
-                                                                .url("https://api.diy.org/makers/" + projectOwner + "/projects/" + postID + "/comments")
-                                                                .post(formBody)
-                                                                .build();
-                                                        try {
-                                                            Response response = client.newCall(request).execute();
-                                                            if (!response.isSuccessful())
-                                                                throw new IOException("Unexpected code " + response);
-
-                                                            //at this point the post is succesful
-                                                            adapter.add(input);
-
-
-                                                        } catch (IOException e) {
-                                                            if (e == null) {
-                                                                Log.e("oops", "null");
-                                                            }
-                                                            Log.e("message", e.getMessage());
-                                                            Log.e("ERROR", "Post unsuccesful");
+                                                    @Override
+                                                    public Request authenticateProxy(Proxy proxy, Response response) {
+                                                        if (responseCount(response) >= 5) {
+                                                            return null; // If we've failed 3 times, give up.
                                                         }
+                                                        String credential = Credentials.basic(username, password);
+                                                        return response.request().newBuilder()
+                                                                .header("Authorization", credential)
+                                                                .build();
+                                                    }
+
+                                                    private int responseCount(Response response) {
+                                                        int result = 1;
+                                                        while ((response = response.priorResponse()) != null) {
+                                                            result++;
+                                                        }
+                                                        return result;
+                                                    }
+                                                });
+
+                                                Log.e("authenticated", "posting now.....");
+                                                //post
 
 
+                                                RequestBody formBody = new FormEncodingBuilder()
+                                                        .add("raw", input)
+                                                        .build();
 
+                                                Request request = new Request.Builder()
+                                                        .url("https://api.diy.org/makers/" + projectOwner + "/projects/" + postID + "/comments")
+                                                        .post(formBody)
+                                                        .build();
+                                                try {
+                                                    Response response = client.newCall(request).execute();
+                                                    if (!response.isSuccessful())
+                                                        throw new IOException("Unexpected code " + response);
+
+                                                    //at this point the post is succesful
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            adapter.add(input);
+                                                        }
+                                                    });
+
+
+                                                } catch (IOException e) {
+                                                    if (e == null) {
+//                                                        Log.e("oops", "null");
+                                                    }
+                                                    Log.e("message", e.getMessage());
+                                                    Log.e("ERROR", "Post unsuccesful");
+                                                }
 
 
                                                 return null;
@@ -229,69 +259,83 @@ public class Comments extends AppCompatActivity {
         final int projectID = id;//TODO
 
 
+        AsyncTask p = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                comment = "";//initialize the comment to be anything other than null to avoid nullpointer exceptions....
 
 
-                AsyncTask p = new AsyncTask() {
+                client.setAuthenticator(new Authenticator() {
                     @Override
-                    protected Object doInBackground(Object[] params) {
-                        comment = "";//initialize the comment to be anything other than null to avoid nullpointer exceptions....
+                    public Request authenticate(Proxy proxy, Response response) {
 
-
-                        client.setAuthenticator(new Authenticator() {
-                            @Override
-                            public Request authenticate(Proxy proxy, Response response) {
-
-                                //hardcoded the login values
-                                String credential = Credentials.basic(username, password);
-                                return response.request().newBuilder()
-                                        .header("Authorization", credential)
-                                        .build();
-                            }
-
-                            @Override
-                            public Request authenticateProxy(Proxy proxy, Response response) {
-                                return null; // Null indicates no attempt to authenticate.
-                            }
-                        });
-
-                        //http://api.diy.org/makers/:id/projects/:id/comments
-                        Request request = new Request.Builder()
-                                .url("http://api.diy.org/makers/" + projectOwner + "/projects/" + projectID + "/comments")
-                                .header("x-diy-api-token", token)
+                        //hardcoded the login values
+                        String credential = Credentials.basic(username, password);
+                        return response.request().newBuilder()
+                                .header("Authorization", credential)
                                 .build();
-                        try {
-                            Response response = client.newCall(request).execute();
-                            if (!response.isSuccessful())
-                                throw new IOException("Unexpected code " + response);
-                            String body = response.body().string();
-//                            Log.e("output", body);
-                            JSONObject resp = new JSONObject(body);
-                            JSONArray arr = new JSONArray(resp.getString("response"));
-                            for (int i = 0; i < arr.length(); i++) {
-                                JSONObject current = arr.getJSONObject(i);
-                                comment = current.getString("html");
-//                                Log.e("outside",comment);
-                                comments.add(comment);
-                            }
-//                            Log.e("response", token);
-                        } catch (Exception e) {
-                            Log.e("second async task error", e.getMessage());
-                        }
-                        //after all that is completed and everything is correctly added to the adapter, restore visibility of the imageview
-                        return null;
                     }
 
                     @Override
-                    protected void onPostExecute(Object o) {
-
-                        adapter.notifyDataSetChanged();
-
+                    public Request authenticateProxy(Proxy proxy, Response response) {
+                        if (responseCount(response) >= 5) {
+                            return null; // If we've failed 3 times, give up.
+                        }
+                        String credential = Credentials.basic(username, password);
+                        return response.request().newBuilder()
+                                .header("Authorization", credential)
+                                .build();
                     }
-                }.execute();
 
+                    private int responseCount(Response response) {
+                        int result = 1;
+                        while ((response = response.priorResponse()) != null) {
+                            result++;
+                        }
+                        return result;
+                    }
+                });
+
+                //http://api.diy.org/makers/:id/projects/:id/comments
+                Request request = new Request.Builder()
+                        .url("http://api.diy.org/makers/" + projectOwner + "/projects/" + projectID + "/comments")
+                        .header("x-diy-api-token", token)
+                        .build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code " + response);
+                    String body = response.body().string();
+//                            Log.e("output", body);
+                    JSONObject resp = new JSONObject(body);
+                    JSONArray arr = new JSONArray(resp.getString("response"));
+                    for (int i = 0; i < arr.length(); i++) {
+                        JSONObject current = arr.getJSONObject(i);
+                        comment = current.getString("html");
+//                                Log.e("outside",comment);
+                        comments.add(comment);
+                    }
+//                            Log.e("response", token);
+                } catch (Exception e) {
+                    Log.e("Loading comments error", e.getMessage());
+                }
+                //after all that is completed and everything is correctly added to the adapter, restore visibility of the imageview
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+
+                adapter.notifyDataSetChanged();
+
+            }
+        }.execute();
 
 
     }
+
+    //other unused, but required android methods.
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e5e5e5"
+    android:background="#7ce5a6"
     android:id="@+id/projects">
 
 
@@ -21,9 +21,7 @@
         android:paddingTop="1dip"
 
 
-
-
-        />
+        android:background="#7ce5a6" />
 
 
     <penguinologist.menu.SatelliteMenu

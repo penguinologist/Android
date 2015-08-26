@@ -4,7 +4,8 @@
 
     android:orientation="vertical"
     android:padding="2dp"
-    android:id="@+id/card">
+    android:id="@+id/card"
+    android:background="#7ce5a6">
 
     <TextView
         android:id="@+id/title"
@@ -15,7 +16,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#040404"
         android:textStyle="bold"
-        android:typeface="sans" />
+        android:typeface="sans"
+        android:background="#7ce5a6" />
 
     <ImageView
         android:id="@+id/list_image"
@@ -23,7 +25,7 @@
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         android:layout_margin="2dp"
-        />
+        android:background="#7ce5a6" />
 
 
     <TextView
@@ -33,7 +35,8 @@
         android:text="Create an NFC Pet Tag"
         android:layout_margin="4dp"
         android:textStyle="bold"
-        android:textColor="@android:color/secondary_text_dark"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textColor="@android:color/darker_gray"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="#7ce5a6" />
 
 </LinearLayout>
