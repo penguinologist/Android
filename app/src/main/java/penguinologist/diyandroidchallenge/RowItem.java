@@ -10,11 +10,15 @@ public class RowItem {
     private String imageId;
     private String title;
     private String description;
+    private String projectID;
+    private String projectOwner;
 
-    public RowItem(String imageId, String title, String desc) {
+    public RowItem(String imageId, String title, String desc, String projectID, String projectOwner) {
         this.imageId = imageId;
         this.title = title;
         this.description = desc;
+        this.projectID = projectID;
+        this.projectOwner = projectOwner;
     }
 
     public String getImageId() {
@@ -39,6 +43,22 @@ public class RowItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(String proj) {
+        projectID = proj;
+    }
+
+    public String getProjectOwner() {
+        return projectOwner;
+    }
+
+    public void setProjectOwner(String projectOwner) {
+        this.projectOwner = projectOwner;
     }
 
     @Override

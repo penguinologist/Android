@@ -10,13 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,11 +22,20 @@ import java.util.List;
  * Long live the Penguin!
  */
 
-
+/**
+ * This class extends the ArrayAdapter of type RowItem. This is the adapter for the RowItems inside of the listview on the Projects page.
+ */
 public class CustomAdapter extends ArrayAdapter<RowItem> {
 
     Context context;
 
+    /**
+     * The constructor
+     *
+     * @param context    The context where the custom adapter is supposed to be stored.
+     * @param resourceId The id of the resource to be linked.
+     * @param items      The list of RowItems linked to the adapter.
+     */
     public CustomAdapter(Context context, int resourceId, List<RowItem> items) {
         super(context, resourceId, items);
         this.context = context;
@@ -36,6 +43,9 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
 
     }
 
+    /**
+     * Inner class serving as an object holder for all the types inside the RowItem
+     */
     public class ViewHolder {
         ImageView image;
         TextView title;
@@ -44,9 +54,17 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
     }
 
 
+    /**
+     * This method sets up and executes code on click. It also links the correct images to the correct projects.
+     *
+     * @param position    The position where the user clicked.
+     * @param convertView The view currently in question.
+     * @param parent      The parent view.
+     * @return Returns a view version of the entire ViewHolder.
+     */
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        RowItem rowItem = getItem(position);
+        final RowItem rowItem = getItem(position);
 
         LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
@@ -75,21 +93,21 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
 
                 Toast.makeText(v.getContext(), "Loading comments... ", Toast.LENGTH_SHORT).show();
 
-                ArrayList<String> ids = Projects.getIDs();
-
-                ArrayList<String> titles = Projects.getTitles();
                 String username = Projects.getUsername();
                 String token = Projects.getToken();
                 String password = Projects.getPassword();
-                String currentUser = Projects.getCurrentUser();
+                String projectOwner = rowItem.getProjectOwner();
 
                 Intent intent = new Intent(v.getContext(), Comments.class);
-                intent.putExtra("id", ids.get(position));
-                intent.putExtra("title", titles.get(position));
+                intent.putExtra("id", rowItem.getProjectID());
+
+                intent.putExtra("title", rowItem.getTitle());
+                Log.e("Custom Adapter", "current ID: " + rowItem.getTitle());
                 intent.putExtra("username", username);
                 intent.putExtra("token", token);
                 intent.putExtra("password", password);
-                intent.putExtra("currentUser",currentUser);
+                intent.putExtra("projectOwner", projectOwner);
+
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -111,8 +129,6 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
 
         return convertView;
     }
-
-
 
 
 }

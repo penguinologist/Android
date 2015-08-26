@@ -28,6 +28,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -63,6 +64,7 @@ public class Comments extends AppCompatActivity {
 
     private Context context;
     private int postID = 0;
+    private String projectOwner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,7 @@ public class Comments extends AppCompatActivity {
         setContentView(R.layout.activity_comments);
 
         String ttle = "";
-         currentUser = "";
+        currentUser = "";
 
 
         final Intent intent = getIntent();
@@ -80,6 +82,7 @@ public class Comments extends AppCompatActivity {
             username = intent.getStringExtra("username");
             password = intent.getStringExtra("password");
             currentUser = intent.getStringExtra("currentUser");
+            projectOwner = intent.getStringExtra("projectOwner");
         }
 
         list = (ListView) findViewById(R.id.listView);
@@ -127,111 +130,66 @@ public class Comments extends AppCompatActivity {
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, final int id) {
 
+
+
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-
+                                                input = userInput.getText().toString();
                                             }
                                         });
+
+
+
 
                                         AsyncTask auth = new AsyncTask() {
 
                                             @Override
                                             protected Object doInBackground(Object[] params) {
 
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
 
-                                                        input = userInput.getText().toString();
+                                                        Log.e("user input",input);
 
-                                                        Log.e("username",username);
-                                                        Log.e("password",password);
-
-                                                        AsyncTask auth = new AsyncTask() {
+                                                        Log.e("username", username);
+                                                        Log.e("password", password);
 
 
-                                                            //authenticate
-                                                            @Override
-                                                            protected Object doInBackground(Object[] params) {
-                                                                client.setAuthenticator(new Authenticator() {
-                                                                    @Override
-                                                                    public Request authenticate(Proxy proxy, Response response) {
 
-                                                                        //hardcoded the login values
-                                                                        String credential = Credentials.basic(currentUser, password);
-                                                                        return response.request().newBuilder()
-                                                                                .header("Authorization", credential)
-                                                                                .build();
-                                                                    }
 
-                                                                    @Override
-                                                                    public Request authenticateProxy(Proxy proxy, Response response) {
-                                                                        return null; // Null indicates no attempt to authenticate.
-                                                                    }
-                                                                });
 
-                                                                Request request = new Request.Builder()
-                                                                        .url("https://api.diy.org/authorize")
-                                                                        .build();
-
-                                                                try {
-                                                                    Response response = client.newCall(request).execute();
-                                                                    if (!response.isSuccessful())
-                                                                        throw new IOException("Unexpected code " + response);
-
-                                                                    String body = response.body().string();
-
-                                                                    JSONObject resp = new JSONObject(body);
-                                                                    JSONObject responseObject = resp.getJSONObject("response");
-                                                                    token = responseObject.getString("token");
-                                                                } catch (Exception e) {
-                                                                    Log.e("error", "something happened");
-                                                                    Log.e("message",e.getMessage());
-                                                                }
-
-                                                                return null;
-                                                            }
-
-                                                        }.execute();
 
                                                         Log.e("authenticated", "posting now.....");
                                                         //post
 
-                                                        AsyncTask post = new AsyncTask() {
-                                                            @Override
-                                                            protected Object doInBackground(Object[] params) {
-                                                                //TODO fix ID to be the right nr....
 
-                                                                RequestBody formBody = new FormEncodingBuilder()
-                                                                        .add("raw", input)
-                                                                        .build();
+                                                        RequestBody formBody = new FormEncodingBuilder()
+                                                                .add("raw", input)
+                                                                .build();
 
-                                                                Request request = new Request.Builder()
-                                                                        .url("https://api.diy.org/makers/" + username + "/projects/" + postID + "/comments")
-                                                                        .post(formBody)
-                                                                        .build();
-                                                                try {
-                                                                    Response response = client.newCall(request).execute();
-                                                                    if (!response.isSuccessful())
-                                                                        throw new IOException("Unexpected code " + response);
+                                                        Request request = new Request.Builder()
+                                                                .url("https://api.diy.org/makers/" + projectOwner + "/projects/" + postID + "/comments")
+                                                                .post(formBody)
+                                                                .build();
+                                                        try {
+                                                            Response response = client.newCall(request).execute();
+                                                            if (!response.isSuccessful())
+                                                                throw new IOException("Unexpected code " + response);
 
-                                                                    //at this point the post is succesful
-                                                                    adapter.add(input);
+                                                            //at this point the post is succesful
+                                                            adapter.add(input);
 
 
-                                                                } catch (IOException e) {
-                                                                    if (e == null) {
-                                                                        Log.e("oops", "null");
-                                                                    }
-                                                                    Log.e("message", e.getMessage());
-                                                                    Log.e("ERROR", "Post unsuccesful");
-                                                                }
-                                                                return null;
+                                                        } catch (IOException e) {
+                                                            if (e == null) {
+                                                                Log.e("oops", "null");
                                                             }
-                                                        }.execute();
-                                                    }
-                                                });
+                                                            Log.e("message", e.getMessage());
+                                                            Log.e("ERROR", "Post unsuccesful");
+                                                        }
+
+
+
+
 
                                                 return null;
                                             }
@@ -262,66 +220,43 @@ public class Comments extends AppCompatActivity {
 
     /**
      * this method loads the comments for each project
+     *
      * @param id The id of the project
      */
     private void loadComments(int id) {
 
 //authorize again (prevents timeouts)
+        final int projectID = id;//TODO
 
-        AsyncTask auth = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                client.setAuthenticator(new Authenticator() {
-                    @Override
-                    public Request authenticate(Proxy proxy, Response response) {
 
-                        //hardcoded the login values
-                        String credential = Credentials.basic(username, password);
-                        return response.request().newBuilder()
-                                .header("Authorization", credential)
-                                .build();
-                    }
 
-                    @Override
-                    public Request authenticateProxy(Proxy proxy, Response response) {
-                        return null; // Null indicates no attempt to authenticate.
-                    }
-                });
 
-                Request request = new Request.Builder()
-                        .url("https://api.diy.org/authorize")
-                        .build();
-
-                try {
-                    Response response = client.newCall(request).execute();
-                    if (!response.isSuccessful())
-                        throw new IOException("Unexpected code " + response);
-
-                    String body = response.body().string();
-                    JSONObject resp = new JSONObject(body);
-                    JSONObject responseObject = resp.getJSONObject("response");
-                    token = responseObject.getString("token");
-//                    Log.e("Token", token);
-                } catch (Exception e) {
-                    Log.e("error", "something happened");
-                }
-
-                return null;
-            }
-        }.execute();
-
-        final int commentID = id;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
                 AsyncTask p = new AsyncTask() {
                     @Override
                     protected Object doInBackground(Object[] params) {
                         comment = "";//initialize the comment to be anything other than null to avoid nullpointer exceptions....
 
+
+                        client.setAuthenticator(new Authenticator() {
+                            @Override
+                            public Request authenticate(Proxy proxy, Response response) {
+
+                                //hardcoded the login values
+                                String credential = Credentials.basic(username, password);
+                                return response.request().newBuilder()
+                                        .header("Authorization", credential)
+                                        .build();
+                            }
+
+                            @Override
+                            public Request authenticateProxy(Proxy proxy, Response response) {
+                                return null; // Null indicates no attempt to authenticate.
+                            }
+                        });
+
                         //http://api.diy.org/makers/:id/projects/:id/comments
                         Request request = new Request.Builder()
-                                .url("http://api.diy.org/makers/" + username + "/projects/" + commentID + "/comments")
+                                .url("http://api.diy.org/makers/" + projectOwner + "/projects/" + projectID + "/comments")
                                 .header("x-diy-api-token", token)
                                 .build();
                         try {
@@ -353,8 +288,8 @@ public class Comments extends AppCompatActivity {
 
                     }
                 }.execute();
-            }
-        });
+
+
 
     }
 

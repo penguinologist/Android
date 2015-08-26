@@ -1,7 +1,9 @@
 package penguinologist.diyandroidchallenge;
 
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,19 +14,20 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import penguinologist.menu.SatelliteMenu;
 import penguinologist.menu.SatelliteMenuItem;
@@ -60,6 +63,8 @@ public class Projects extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
 
+        Log.e("username", username);
+        Log.e("password", password);
 
         Toast.makeText(this, " Click the logo to switch between your projects and those of your friends! ", Toast.LENGTH_SHORT).show();
         projectIDs = new ArrayList<>();
@@ -179,7 +184,8 @@ public class Projects extends AppCompatActivity {
 
         projectIDs = new ArrayList<>();//clear out previous projects
 
-        final ArrayList<String> friends = new ArrayList<>();
+
+        final ArrayList<String> peeps = new ArrayList<>();
         AsyncTask auth = new AsyncTask() {
 
 
@@ -230,157 +236,135 @@ public class Projects extends AppCompatActivity {
             protected void onPostExecute(Object o) {
                 Log.e("auth", "succeeded");
 
-            }
-        }.execute();
 
-        //end of asynchronous calls
+                //get all the ids of those following you
 
-
-        AsyncTask p = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
+                //http://api.diy.org/makers/:id/following
                 Request request = new Request.Builder()
-
-                        //
-
                         .url("http://api.diy.org/makers/" + username + "/following")
-                        .header("x-diy-api-token", token)
                         .build();
-                try {
-                    Response response = client.newCall(request).execute();
-                    if (!response.isSuccessful())
-                        throw new IOException("Unexpected code " + response);
 
-
-                    String body = response.body().string();
-//                            Log.e("output", body);
-
-                    JSONObject resp = new JSONObject(body);
-
-                    JSONArray arr = new JSONArray(resp.getString("response"));
-
-//                            Log.e("length", arr.length() + "");
-                    for (int i = 0; i < arr.length(); i++) {
-
-
-                        JSONObject current = arr.getJSONObject(i);
-
-                        String id = current.getString("url");
-//                       //get all the usernames and store them in the arraylist.
-                        friends.add(id);
-
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Request request, IOException throwable) {
+                        Log.e("FAIL", throwable.getMessage());
                     }
 
-//                            Log.e("response", token);
-
-                } catch (Exception e) {
-                    Log.e("second async task error", e.getMessage());
-                }
-
-
-                return null;
-            }
-
-            String u = "";
+                    @TargetApi(Build.VERSION_CODES.KITKAT)
+                    @Override
+                    public void onResponse(Response response) throws IOException {
+                        try {
+                            if (!response.isSuccessful())
+                                throw new IOException("Unexpected code " + response);
 
 
-            boolean next = true;
-
-            @Override
-            protected void onPostExecute(Object o) {
-                //now that we have the users, time to go through the list and gather all their projects, adding them one by one...
-                u = friends.get(0);
-
-
-                for (int i = 0; i < friends.size(); ) {
+                            String resp = response.body().string();
+                            Log.e("response", resp);
+                            //TODO
+                            JSONObject bd = new JSONObject(resp);
+                            Log.e("bd", bd.toString());
+                            JSONArray body = bd.getJSONArray("response");
 
 
-                    Log.e("i here is " + i, u);
+                            for (int i = 0; i < body.length(); i++) {
+                                JSONObject ob = body.getJSONObject(i);
+                                String name = ob.getString("url");
+
+                                Log.e("added", name);
 
 
-                    u = friends.get(i);
-                    i++;
-                    new AsyncTask() {
-                        @Override
-                        protected Object doInBackground(Object[] params) {
-                            other = u;
+                                Request req = new Request.Builder()
+                                        .url("http://api.diy.org/makers/" + name + "/projects")
+                                        .build();
 
-                            Log.e("u", u);
-//                            Log.e("i", i + "");
-                            Request request = new Request.Builder()
-                                    .url("http://api.diy.org/makers/" + other + "/projects")
-                                    .header("x-diy-api-token", token)
-                                    .build();
+                                client.newCall(req).enqueue(new Callback() {
+                                    @Override
+                                    public void onFailure(Request request, IOException throwable) {
+                                        Log.e("FAIL", throwable.getMessage());
+                                    }
 
-                            try {
-                                Response response = client.newCall(request).execute();
-                                if (!response.isSuccessful())
-                                    throw new IOException("Unexpected code " + response);
+                                    @Override
+                                    public void onResponse(Response response) throws IOException {
+                                        try {
+                                            if (!response.isSuccessful())
+                                                throw new IOException("Unexpected code " + response);
 
 
-                                String body = response.body().string();
-//                            Log.e("output", body);
+                                            String body = response.body().string();
+                                            Log.e("output", body);
 
-                                JSONObject resp = new JSONObject(body);
+                                            try {
+                                                JSONObject resp = new JSONObject(body);
 
-                                JSONArray arr = new JSONArray(resp.getString("response"));
+                                                JSONArray arr = new JSONArray(resp.getString("response"));
 
 //                            Log.e("length", arr.length() + "");
-                                for (int j = 0; j < arr.length(); j++) {
+                                                for (int j = 0; j < arr.length(); j++) {
 
 
-                                    JSONObject current = arr.getJSONObject(j);
+                                                    JSONObject current = arr.getJSONObject(j);
 
-                                    int id = current.getInt("id");
+                                                    int id = current.getInt("id");
 //                                Log.e("id", "" + id);
-                                    projectIDs.add(id + "");
-                                    String title = current.getString("title");
-                                    titles.add(j, title);
+
+
+                                                    String makerID = "";
+                                                    JSONObject maker = current.getJSONObject("maker");
+                                                    makerID = maker.getString("url");
+                                                    String title = current.getString("title");
+                                                    titles.add(j, title);
 //                                Log.e("title", title);
-                                    JSONArray clips = current.getJSONArray("clips");
+                                                    JSONArray clips = current.getJSONArray("clips");
 
-                                    String picture = clips.getJSONObject(0).getJSONObject("assets").getJSONObject("ios_960").getString("url");
+                                                    String picture = clips.getJSONObject(0).getJSONObject("assets").getJSONObject("ios_960").getString("url");
 
-                                    String description = "";
+                                                    String description = "";
 
-                                    final RowItem p = new RowItem(picture, title, description);
+                                                    final RowItem p = new RowItem(picture, title, description, id + "", makerID);
 //                                Log.e("Projects", 1 + "");
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            rowItems.add(p);
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            adapter.add(p);
+
+                                                            Log.e("added", p.getTitle());
+                                                        }
+                                                    });
+
+                                                }
+
+                                            } catch (JSONException e) {
+                                                Log.e("JSON", e.getMessage());
+                                            }
+
+
+                                        } catch (IOException e) {
+                                            Log.e("error", e.getMessage());
                                         }
-                                    });
+                                    }
+                                });
 
 
-                                }
-
-//                            Log.e("response", token);
-
-                            } catch (Exception e) {
-                                Log.e("second async task error", e.getMessage());
                             }
 
 
-                            //after all that is completed and everything is correctly added to the adapter, restore visibility of the imageview
-
-                            return null;
+                        } catch (IOException e) {
+                            Log.e("error", e.getMessage());
+                        } catch (JSONException e) {
+                            Log.e("JSONException", e.getMessage());
                         }
-
-                        @Override
-                        protected void onPostExecute(Object o) {
-                            adapter.notifyDataSetChanged();
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
+                    }
+                });
 
 
             }
-
-
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        }.execute();
     }
+
+    //end of asynchronous calls
+
+
+//        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
     private void loadUserProjects() {
@@ -487,7 +471,7 @@ public class Projects extends AppCompatActivity {
 
                                 String description = "";
 
-                                o = new RowItem(picture, title, description);
+                                o = new RowItem(picture, title, description, id + "", username);
 //                                Log.e("Projects", 1 + "");
                                 runOnUiThread(new Runnable() {
                                     @Override
