@@ -186,7 +186,7 @@ public class Comments extends AppCompatActivity {
 
                                 JSONObject current = arr.getJSONObject(i);
                                 comment = current.getString("html");
-                                Log.e("outside",comment);
+//                                Log.e("outside",comment);
                                 comments.add(comment);
 //
 //                                runOnUiThread(new Runnable() {
