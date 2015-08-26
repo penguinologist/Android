@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Credentials;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -57,7 +58,7 @@ public class Comments extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
 
     public static final MediaType MEDIA_TYPE_MARKDOWN
-            = MediaType.parse("text/x-markdown; charset=utf-8");
+            = MediaType.parse("raw");
 
 
     private Context context;
@@ -216,9 +217,14 @@ public class Comments extends AppCompatActivity {
                                                             @Override
                                                             protected Object doInBackground(Object[] params) {
                                                                 //TODO fix ID to be the right nr....
+
+                                                                RequestBody formBody = new FormEncodingBuilder()
+                                                                        .add("raw", input)
+                                                                        .build();
+
                                                                 Request request = new Request.Builder()
-                                                                        .url("https://api.diy.org/makers/"+username+"/projects/"+postID+"/comments")
-                                                                        .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, input))
+                                                                        .url("https://api.diy.org/makers/" + username + "/projects/"+postID+"/comments")
+                                                                        .post(formBody)
                                                                         .build();
                                                                 try {
                                                                     Response response = client.newCall(request).execute();
