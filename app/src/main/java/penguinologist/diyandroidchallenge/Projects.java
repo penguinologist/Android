@@ -46,14 +46,12 @@ public class Projects extends AppCompatActivity {
     private final static String password = "hiveworking";
 
 
-
     private final OkHttpClient client = new OkHttpClient();
     private RowItem o;
     private static boolean friends = false;
 
     private static ArrayList<String> projectIDs;
     private static ArrayList<String> titles;
-    private int i;
     private static String currentUser;
     private static String other;
 
@@ -120,7 +118,7 @@ public class Projects extends AppCompatActivity {
                     //load friends' projects
                     try {
                         loadConfig(1);
-                        friends =true;
+                        friends = true;
                     } catch (Exception e) {
                         Log.e("ERROR", "Something broke...");
                     }
@@ -154,10 +152,9 @@ public class Projects extends AppCompatActivity {
             //reset all the data
             adapter.clear();
             token = "";
-            projectIDs=new ArrayList<>();
+            projectIDs = new ArrayList<>();
             titles = new ArrayList<>();
             other = "";//not like it's needed but whatever...
-
 
 
             loadUserProjects();
@@ -166,7 +163,7 @@ public class Projects extends AppCompatActivity {
         } else if (selection == 1) {
             adapter.clear();
             token = "";
-            projectIDs=new ArrayList<>();
+            projectIDs = new ArrayList<>();
             titles = new ArrayList<>();
             other = "";//not like it's needed but whatever...
             loadFriendProjects();
@@ -287,6 +284,7 @@ public class Projects extends AppCompatActivity {
             String u = "";
 
 
+            boolean next = true;
 
             @Override
             protected void onPostExecute(Object o) {
@@ -294,27 +292,26 @@ public class Projects extends AppCompatActivity {
                 u = friends.get(0);
 
 
+                for (int i = 0; i < friends.size(); ) {
 
-
-                for (i = 0; i < friends.size(); i++) {
-
-                    u = friends.get(i);
 
                     Log.e("i here is " + i, u);
 
 
+                    u = friends.get(i);
+                    i++;
                     new AsyncTask() {
                         @Override
                         protected Object doInBackground(Object[] params) {
+                            other = u;
 
-
-                            Log.e("u",u);
+                            Log.e("u", u);
 //                            Log.e("i", i + "");
                             Request request = new Request.Builder()
-                                    .url("http://api.diy.org/makers/" + u + "/projects")
+                                    .url("http://api.diy.org/makers/" + other + "/projects")
                                     .header("x-diy-api-token", token)
                                     .build();
-                            other = u;
+
                             try {
                                 Response response = client.newCall(request).execute();
                                 if (!response.isSuccessful())
@@ -342,16 +339,12 @@ public class Projects extends AppCompatActivity {
 //                                Log.e("title", title);
                                     JSONArray clips = current.getJSONArray("clips");
 
-
-                                    //TODO check that the clips are ok
                                     String picture = clips.getJSONObject(0).getJSONObject("assets").getJSONObject("ios_960").getString("url");
-
 
                                     String description = "";
 
                                     final RowItem p = new RowItem(picture, title, description);
 //                                Log.e("Projects", 1 + "");
-                                    Log.e("title on run " + i, title);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -377,17 +370,16 @@ public class Projects extends AppCompatActivity {
                         @Override
                         protected void onPostExecute(Object o) {
                             adapter.notifyDataSetChanged();
-
                         }
-                    }.execute();
-
-
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
 
             }
 
+
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
     }
 
 
@@ -548,9 +540,9 @@ public class Projects extends AppCompatActivity {
     }
 
     public static String getUsername() {
-       if(friends){ //if it's for friends, the username of the friends should be passed along, not the current user's username...
-           return other;
-       }
+        if (friends) { //if it's for friends, the username of the friends should be passed along, not the current user's username...
+            return other;
+        }
 
         return username;
     }
@@ -563,7 +555,7 @@ public class Projects extends AppCompatActivity {
         return password;
     }
 
-    public static String getCurrentUser(){
+    public static String getCurrentUser() {
         return currentUser;
     }
 }
