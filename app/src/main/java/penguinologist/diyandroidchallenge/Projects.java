@@ -148,13 +148,25 @@ public class Projects extends AppCompatActivity {
     private void loadConfig(int selection) throws Exception {
         if (selection == 0) {
 
+
+            //reset all the data
             adapter.clear();
+            token = "";
+            projectIDs=new ArrayList<>();
+            titles = new ArrayList<>();
+            other = "";//not like it's needed but whatever...
+
+
+
             loadUserProjects();
 
 
         } else if (selection == 1) {
             adapter.clear();
-            other = "";
+            token = "";
+            projectIDs=new ArrayList<>();
+            titles = new ArrayList<>();
+            other = "";//not like it's needed but whatever...
             loadFriendProjects();
 
 

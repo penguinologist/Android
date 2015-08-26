@@ -73,7 +73,6 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
                 //position is kept in the getView method as a parameter for future use
 
 
-
                 Toast.makeText(v.getContext(), "Loading comments... ", Toast.LENGTH_SHORT).show();
 
                 ArrayList<String> ids = Projects.getIDs();
@@ -84,11 +83,11 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
                 String password = Projects.getPassword();
 
                 Intent intent = new Intent(v.getContext(), Comments.class);
-                intent.putExtra("id",ids.get(position));
-                intent.putExtra("title",titles.get(position));
-                intent.putExtra("username",username);
-                intent.putExtra("token",token);
-                intent.putExtra("password",password);
+                intent.putExtra("id", ids.get(position));
+                intent.putExtra("title", titles.get(position));
+                intent.putExtra("username", username);
+                intent.putExtra("token", token);
+                intent.putExtra("password", password);
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -98,9 +97,20 @@ public class CustomAdapter extends ArrayAdapter<RowItem> {
             }
         });
 
+        convertView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                //TODO set favorite to this project
+
+                return false;
+            }
+        });
 
         return convertView;
     }
+
+
 
 
 }
